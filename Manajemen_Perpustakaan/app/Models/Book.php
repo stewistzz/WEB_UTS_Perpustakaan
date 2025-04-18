@@ -22,7 +22,7 @@ class Book extends Model
         'author',
         'publisher',
         'year',
-        'category',
+        'category_id',
         'stock'
     ];
 }

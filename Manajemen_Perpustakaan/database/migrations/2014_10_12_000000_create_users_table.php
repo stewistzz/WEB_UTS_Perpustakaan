@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            // role user untuk membedakan login pengguna dan admin
+            $table->string('role')->default('user'); // default: user, bisa juga 'admin'
             $table->rememberToken();
             $table->timestamps();
         });
