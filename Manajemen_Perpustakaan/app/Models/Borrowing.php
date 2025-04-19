@@ -15,7 +15,6 @@ class Borrowing extends Model
         'returned_at',
         'status',
     ];
-    
 
     public function user() {
         return $this->belongsTo(User::class);

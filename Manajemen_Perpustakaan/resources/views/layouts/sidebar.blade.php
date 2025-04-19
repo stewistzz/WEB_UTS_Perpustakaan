@@ -15,15 +15,15 @@
     <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
+            
+            @if (Auth::user() && Auth::user()->role === 'admin')
             <!-- Dashboard -->
             <li class="nav-item">
-                <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard' ? 'active' : '' }}">
+                <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard_admin' ? 'active' : '' }}">
                     <i class="nav-icon fas fa-home"></i>
                     <p>Dashboard</p>
                 </a>
             </li>
-
-            @if (Auth::user() && Auth::user()->role === 'admin')
                 <!-- Admin Only: Data Pengguna -->
                 <li class="nav-header">Data Pengguna</li>
                 <li class="nav-item">
@@ -57,10 +57,16 @@
                     </a>
                 </li>
             @else
+            <li class="nav-item">
+                <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard_mahasiswa' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-home"></i>
+                    <p>Dashboard</p>
+                </a>
+            </li>
                 <!-- User Only: Peminjaman -->
                 <li class="nav-header">Data Peminjaman</li>
                 <li class="nav-item">
-                    <a href="{{ url('/borrow') }}" class="nav-link {{ $activeMenu == 'borrow' ? 'active' : '' }}">
+                    <a href="{{ url('/booking') }}" class="nav-link {{ $activeMenu == 'booking' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-book-reader"></i>
                         <p>Peminjaman Buku</p>
                     </a>

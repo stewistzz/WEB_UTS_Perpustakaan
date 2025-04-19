@@ -34,11 +34,6 @@ class UserController extends Controller
     {
         $users = User::select('id', 'name', 'email', 'role');
 
-        // Filter data user berdasarkan level_id if ($request->level_id){
-        // if ($request->level_id) {
-        //     $users->where('level_id', $request->level_id);
-        // }
-
         return DataTables::of($users)
             ->addIndexColumn() // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
             ->addColumn('aksi', function ($user) { // menambahkan kolom aksi
@@ -50,7 +45,6 @@ class UserController extends Controller
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
             ->make(true);
     }
-
     // Menampilkan detail user
     public function show($id)
     {
@@ -201,4 +195,5 @@ class UserController extends Controller
 
         return redirect('/');
     }
+
 }

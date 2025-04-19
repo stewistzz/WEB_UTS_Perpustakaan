@@ -6,7 +6,7 @@
             <h3 class="card-title">{{ $page->title ?? 'Daftar Peminjaman' }}</h3>
             <div class="card-tools">
                 {{-- Tambahkan tombol jika perlu tambah data peminjaman --}}
-                {{-- <button onclick="modalAction('{{ url('/borrowing/create_ajax') }}')" class="btn btn-sm btn-primary mt-1">Tambah Peminjaman</button> --}}
+                <button onclick="modalAction('{{ url('/booking/create_ajax') }}')" class="btn btn-sm btn-primary mt-1">Tambah Peminjaman</button>
             </div>
         </div>
         <div class="card-body">
@@ -24,8 +24,8 @@
                         <th>ID Pengguna</th>
                         <th>ID Buku</th>
                         <th>Tgl Peminjaman</th>
-                        {{-- <th>Jatuh Tempo</th>
-                        <th>Tgl Pengembalian</th> --}}
+                        <th>Jatuh Tempo</th>
+                        {{-- <th>Tgl Pengembalian</th> --}}
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -54,7 +54,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('borrow/list') }}",
+                    url: "{{ url('booking/list') }}",
                     type: "POST"
                 },
                 columns: [
@@ -62,7 +62,7 @@
                     { data: "user_id" },
                     { data: "book_id" },
                     { data: "borrowed_at", className: "text-center" },
-                    // { data: "due_date", className: "text-center" },
+                    { data: "due_date", className: "text-center" },
                     // { data: "returned_at", className: "text-center" },
                     { data: "status", className: "text-center" },
                     { data: "aksi", orderable: false, searchable: false } // aktifkan jika kamu ingin tombol aksi

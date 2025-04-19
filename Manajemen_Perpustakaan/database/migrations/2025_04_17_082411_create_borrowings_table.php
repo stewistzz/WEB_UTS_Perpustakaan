@@ -20,6 +20,8 @@ return new class extends Migration
             $table->date('due_date');    // tanggal harus kembali
             $table->date('returned_at')->nullable(); // jika sudah dikembalikan
             $table->enum('status', ['dipinjam', 'dikembalikan', 'terlambat'])->default('dipinjam');
+            // $table->enum('status', ['dipinjam', 'dikembalikan', 'terlambat']);
+
             $table->timestamps();
         
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

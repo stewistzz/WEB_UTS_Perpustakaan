@@ -36,4 +36,3 @@ class BorrowingSeeder extends Seeder
         DB::table('borrowings')->insert($data);
     }
 }
-
