@@ -11,23 +11,27 @@ use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
-    // function
+    // Menampilkan halaman daftar buku
     public function index()
     {
-
+        // Breadcrumb untuk navigasi
         $breadcrumb = (object) [
             'title' => 'Daftar Buku',
             'list'  => ['Home', 'Buku']
         ];
 
+        // Judul halaman
         $page = (object) [
             'title' => 'Daftar buku yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'book'; // set menu yang sedang aktif
+        // Menu aktif di navbar
+        $activeMenu = 'book';
 
+        // Ambil semua data buku dari database
         $book = Book::all();
 
+        // Kirim data ke view
         return view('book.book', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
@@ -36,38 +40,54 @@ class BookController extends Controller
         ]);
     }
 
+    // Menyediakan data buku dalam format DataTables (digunakan untuk AJAX table)
     public function list(Request $request)
     {
-        $books = Book::select('id', 'title', 'author', 'publisher', 'year', 'category_id', 'stock');
+        // Pilih kolom yang akan ditampilkan
+        $books = Book::select(
+            'id', 
+            'title', 
+            'author', 
+            'publisher', 
+            'year', 
+            'category_id', 
+            'stock');
 
+        // Buat struktur DataTables dengan kolom aksi (detail, edit, hapus)
         return DataTables::of($books)
-            ->addIndexColumn() // Menambahkan kolom index otomatis
+            ->addIndexColumn() // Tambahkan nomor urut otomatis
             ->addColumn('aksi', function ($book) {
+                // Tombol aksi yang ditampilkan di tabel
                 $btn = '<button onclick="modalAction(\'' . url('/book/' . $book->id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/book/' . $book->id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/book/' . $book->id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
-            ->rawColumns(['aksi'])
+            ->rawColumns(['aksi']) // Izinkan HTML di kolom aksi
             ->make(true);
     }
 
-    // Method untuk show detail buku
+    // Menampilkan detail satu buku
     public function show($id)
     {
+        // Ambil data buku dengan relasi kategori
         $book = Book::with('category')->find($id);
 
+        // Breadcrumb untuk halaman detail
         $breadcrumb = (object) [
             'title' => 'Detail Buku',
             'list' => ['Home', 'Book', 'Detail']
         ];
 
+        // Judul halaman
         $page = (object) [
             'title' => 'Detail Buku'
         ];
 
+        // Menu aktif
         $activeMenu = 'book';
 
+        // Kirim data ke view
         return view('book.show', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
@@ -76,17 +96,21 @@ class BookController extends Controller
         ]);
     }
 
-    // Tampilkan form tambah buku via modal AJAX
+    // Menampilkan form tambah buku via modal (AJAX)
     public function create_ajax()
     {
-        $categories = Category::all(); // untuk pilihan dropdown kategori
+        // Ambil semua kategori untuk dropdown
+        $categories = Category::all();
         return view('book.create_ajax', compact('categories'));
     }
 
-    // Simpan buku baru
+    // Simpan data buku baru (AJAX)
     public function store_ajax(Request $request)
     {
+        // Cek apakah request berasal dari AJAX
         if ($request->ajax() || $request->wantsJson()) {
+
+            // Aturan validasi input
             $rules = [
                 'title' => 'required|string|min:2',
                 'author' => 'required|string|min:2',
@@ -96,8 +120,10 @@ class BookController extends Controller
                 'stock' => 'required|numeric|min:0',
             ];
 
+            // Validasi input
             $validator = Validator::make($request->all(), $rules);
 
+            // Jika gagal validasi, kirim error dalam JSON
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -106,29 +132,38 @@ class BookController extends Controller
                 ]);
             }
 
+            // Simpan buku baru ke database
             Book::create($request->all());
 
+            // Kirim response berhasil
             return response()->json([
                 'status' => true,
                 'message' => 'Buku berhasil disimpan'
             ]);
         }
 
+        // Redirect jika bukan AJAX
         return redirect('/');
     }
 
-    // Tampilkan form edit buku via modal
+    // Menampilkan form edit buku via modal (AJAX)
     public function edit_ajax(string $id)
     {
+        // Ambil data buku berdasarkan ID
         $book = Book::find($id);
+
+        // Ambil semua kategori untuk dropdown
         $categories = Category::all();
+
+        // Tampilkan view dengan data
         return view('book.edit_ajax', compact('book', 'categories'));
     }
 
-    // Proses update buku
+    // Memproses update data buku (AJAX)
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
+            // Aturan validasi
             $rules = [
                 'title' => 'required|string|min:2',
                 'author' => 'required|string|min:2',
@@ -138,8 +173,10 @@ class BookController extends Controller
                 'stock' => 'required|numeric|min:0',
             ];
 
+            // Validasi input
             $validator = Validator::make($request->all(), $rules);
 
+            // Jika validasi gagal
             if ($validator->fails()) {
                 return response()->json([
                     'status'    => false,
@@ -147,8 +184,10 @@ class BookController extends Controller
                 ]);
             }
 
+            // Temukan buku berdasarkan ID
             $book = Book::find($id);
 
+            // Jika buku ditemukan, lakukan update
             if ($book) {
                 $book->update($request->all());
 
@@ -157,6 +196,7 @@ class BookController extends Controller
                     'message' => 'Buku berhasil diperbarui'
                 ]);
             } else {
+                // Jika buku tidak ditemukan
                 return response()->json([
                     'status' => false,
                     'message' => 'Data tidak ditemukan'
@@ -167,19 +207,21 @@ class BookController extends Controller
         return redirect('/');
     }
 
-    // Tampilkan konfirmasi hapus
+    // Tampilkan konfirmasi hapus buku
     public function confirm_ajax(string $id)
     {
         $book = Book::find($id);
         return view('book.confirm_ajax', ['book' => $book]);
     }
 
-    // Hapus buku
+    // Menghapus buku dari database (AJAX)
     public function delete_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
+            // Temukan buku
             $book = Book::find($id);
 
+            // Jika buku ditemukan, hapus
             if ($book) {
                 $book->delete();
                 return response()->json([

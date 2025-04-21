@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('borrowed_at'); // tanggal peminjaman
             $table->date('due_date');    // tanggal harus kembali
             $table->date('returned_at')->nullable(); // jika sudah dikembalikan
-            $table->enum('status', ['dipinjam', 'dikembalikan', 'terlambat'])->default('dipinjam');
+            $table->enum('status', ['dipinjam', 'dikembalikan'])->default('dipinjam');
             // $table->enum('status', ['dipinjam', 'dikembalikan', 'terlambat']);
 
             $table->timestamps();

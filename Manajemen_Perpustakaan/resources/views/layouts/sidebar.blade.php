@@ -15,15 +15,16 @@
     <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-            
+
             @if (Auth::user() && Auth::user()->role === 'admin')
-            <!-- Dashboard -->
-            <li class="nav-item">
-                <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard_admin' ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-home"></i>
-                    <p>Dashboard</p>
-                </a>
-            </li>
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a href="{{ url('/') }}"
+                        class="nav-link {{ $activeMenu == 'dashboard_admin' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
                 <!-- Admin Only: Data Pengguna -->
                 <li class="nav-header">Data Pengguna</li>
                 <li class="nav-item">
@@ -57,12 +58,13 @@
                     </a>
                 </li>
             @else
-            <li class="nav-item">
-                <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard_mahasiswa' ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-home"></i>
-                    <p>Dashboard</p>
-                </a>
-            </li>
+                <li class="nav-item">
+                    <a href="{{ url('/') }}"
+                        class="nav-link {{ $activeMenu == 'dashboard_mahasiswa' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
                 <!-- User Only: Peminjaman -->
                 <li class="nav-header">Data Peminjaman</li>
                 <li class="nav-item">
@@ -75,15 +77,18 @@
 
             <!-- Logout -->
             <li class="nav-item mt-3">
-                <form method="POST" action="{{ route('logout') }}">
+                <a href="#" class="nav-link text-danger"
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    <p>Logout</p>
+                </a>
+
+                <!-- Form Logout (hidden) -->
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
-                    <button type="submit" class="nav-link btn btn-link text-start text-danger"
-                        style="color: inherit; text-decoration: none;">
-                        <i class="nav-icon fas fa-sign-out-alt"></i>
-                        <p>Logout</p>
-                    </button>
                 </form>
             </li>
+
         </ul>
     </nav>
 </div>

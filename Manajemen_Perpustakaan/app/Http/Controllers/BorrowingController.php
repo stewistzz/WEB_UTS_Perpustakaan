@@ -12,22 +12,27 @@ use Illuminate\Support\Facades\DB;
 
 class BorrowingController extends Controller
 {
+    // Menampilkan halaman utama daftar peminjaman
     public function index()
     {
-
+        // Menentukan breadcrumb untuk navigasi
         $breadcrumb = (object) [
             'title' => 'Daftar Peminjaman',
             'list'  => ['Home', 'Peminjaman']
         ];
 
+        // Menentukan halaman untuk judul halaman
         $page = (object) [
             'title' => 'Daftar peminjaman yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'borrow'; // set menu yang sedang aktif
+        // Menandakan menu yang sedang aktif
+        $activeMenu = 'borrow'; 
 
+        // Mengambil semua data peminjaman
         $borrow = Borrowing::all();
 
+        // Menampilkan view dengan data yang dibutuhkan
         return view('borrow.index', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
@@ -36,48 +41,53 @@ class BorrowingController extends Controller
         ]);
     }
 
+    // Menampilkan data peminjaman dalam format DataTables
     public function list(Request $request)
     {
+        // Mengambil data peminjaman untuk ditampilkan
         $borrows = Borrowing::select(
             'id',
             'user_id',
             'book_id',
             'borrowed_at',
-            // 'due_date', 
-            // 'returned_at', 
             'status'
         );
 
+        // Menggunakan DataTables untuk menampilkan data
         return DataTables::of($borrows)
             ->addIndexColumn() // Menambahkan kolom index otomatis
             ->addColumn('aksi', function ($borrow) {
+                // Menambahkan tombol untuk aksi detail dan edit
                 $btn = '<button onclick="modalAction(\'' . url('/borrow/' . $borrow->id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/borrow/' . $borrow->id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/borrow/' . $borrow->id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
 
-    
-
-    // Method untuk menampilkan detail peminjaman
+    // Menampilkan detail peminjaman berdasarkan ID
     public function show($id)
     {
         // Memuat relasi user dan book agar bisa ditampilkan di view
         $borrow = Borrowing::with(['user', 'book'])->find($id);
 
+        // Menentukan breadcrumb untuk navigasi
         $breadcrumb = (object) [
             'title' => 'Detail Peminjaman',
             'list' => ['Home', 'Borrowing', 'Detail']
         ];
 
+        // Menentukan halaman untuk judul halaman
         $page = (object) [
             'title' => 'Detail Peminjaman'
         ];
 
+        // Menandakan menu yang sedang aktif
         $activeMenu = 'borrow';
 
+        // Menampilkan view dengan data yang dibutuhkan
         return view('borrow.show', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
@@ -86,19 +96,23 @@ class BorrowingController extends Controller
         ]);
     }
 
-    // Tampilkan form edit peminjaman via modal
+    // Menampilkan form edit peminjaman via modal
     public function edit_ajax(string $id)
     {
+        // Mengambil data peminjaman, users, dan books untuk dropdown
         $borrow = Borrowing::find($id);
-        $users = User::all(); // Untuk dropdown user
-        $books = Book::all(); // Untuk dropdown buku
+        $users = User::all();
+        $books = Book::all();
+
         return view('borrow.edit_ajax', compact('borrow', 'users', 'books'));
     }
 
-    // Proses update peminjaman
+    // Proses untuk memperbarui data peminjaman
     public function update_ajax(Request $request, $id)
     {
+        // Memeriksa apakah request menggunakan ajax atau json
         if ($request->ajax() || $request->wantsJson()) {
+            // Aturan validasi untuk data yang dimasukkan
             $rules = [
                 'user_id'      => 'required|exists:users,id',
                 'book_id'      => 'required|exists:books,id',
@@ -108,8 +122,7 @@ class BorrowingController extends Controller
                 'status'       => 'required|string|in:dipinjam,dikembalikan',
             ];
 
-            // dd($request->all());
-
+            // Validasi input
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
@@ -119,6 +132,7 @@ class BorrowingController extends Controller
                 ]);
             }
 
+            // Mengambil data peminjaman dan memperbarui dengan data baru
             $borrow = Borrowing::find($id);
 
             if ($borrow) {
@@ -138,72 +152,35 @@ class BorrowingController extends Controller
         return redirect('/');
     }
 
-    // create booking untuk peran user
-    public function create_ajax()
+    // Tampilkan konfirmasi hapus buku
+    public function confirm_ajax(string $id)
     {
-        // Ambil data buku untuk dropdown
-        $books = Book::where('stock', '>', 0)->get();
-        return view('borrowing.create_ajax', compact('books'));
+        $borrow = Borrowing::find($id);
+        return view('borrow.confirm_ajax', ['borrow' => $borrow]);
     }
 
-    public function store_ajax(Request $request)
+    // Menghapus buku dari database (AJAX)
+    public function delete_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            // Validasi hanya kolom yang diperlukan
-            $rules = [
-                'book_id'     => 'required|exists:books,id',
-                'borrowed_at' => 'required|date',
-            ];
+            // Temukan buku
+            $borrow = Borrowing::find($id);
 
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
+            // Jika buku ditemukan, hapus
+            if ($borrow) {
+                $borrow->delete();
                 return response()->json([
-                    'status'    => false,
-                    'message'   => 'Validasi gagal',
-                    'msgField'  => $validator->errors(),
+                    'status' => true,
+                    'message' => 'Buku berhasil dihapus'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
                 ]);
             }
-
-            // Simpan hanya 3 kolom utama, lainnya set default
-            Borrowing::create([
-                'user_id'     => auth()->id(),
-                'book_id'     => $request->book_id,
-                'borrowed_at' => $request->borrowed_at,
-                'due_date'    => null, // default
-                'returned_at' => null, // default
-                'status'      => 'none', // default string
-            ]);
-
-            return response()->json([
-                'status'  => true,
-                'message' => 'Data peminjaman berhasil disimpan'
-            ]);
         }
-
         return redirect('/');
     }
 
-
-    public function list_booking(Request $request)
-    {
-        $bookings = Borrowing::select(
-            'id',
-            'user_id',
-            'book_id',
-            'borrowed_at',
-            // 'due_date', 
-            // 'returned_at', 
-            'status'
-        );
-
-        return DataTables::of($bookings)
-            ->addIndexColumn() // Menambahkan kolom index otomatis
-            ->addColumn('aksi', function ($booking) {
-                $btn = '<button onclick="modalAction(\'' . url('/booking/' . $booking->id . '/create_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                return $btn;
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
-    }
 }

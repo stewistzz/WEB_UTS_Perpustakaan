@@ -66,8 +66,10 @@ class Kernel extends HttpKernel
     ];
 
     protected $routeMiddleware = [
-        // Middleware lainnya
+        // Daftar middleware khusus untuk route (bisa digunakan pada route tertentu saja)
+        
+        // Middleware 'role' digunakan untuk memeriksa peran (role) pengguna
+        // Didefinisikan agar bisa dipakai pada route seperti ->middleware('role:admin')
         'role' => \App\Http\Middleware\RoleMiddleware::class,
-    ];
-    
+    ];   
 }

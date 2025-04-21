@@ -30,7 +30,6 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/book', [BookController::class, 'index']);
 
 
-
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -40,11 +39,7 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/', [WelcomeController::class, 'index']);
 
-    /**
-     * ===============================
-     * ============ ADMIN ============
-     * ===============================
-     */
+    // Route untuk role admin
     Route::middleware('role:admin')->group(function () {
         Route::prefix('book')->group(function () {
             Route::get('/', [BookController::class, 'index']);
@@ -94,17 +89,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}/show', [BorrowingController::class, 'show']);
             Route::get('/{id}/edit_ajax', [BorrowingController::class, 'edit_ajax']);
             Route::put('/{id}/update_ajax', [BorrowingController::class, 'update_ajax']);
-            // Route::get('/{id}/delete_ajax', [UserController::class, 'confirm_ajax']);
-            // Route::delete('/{id}/delete_ajax', [UserController::class, 'delete_ajax']);
-            // Route::delete('/{id}', [UserController::class, 'destroy']);
+            Route::get('/{id}/delete_ajax', [BorrowingController::class, 'confirm_ajax']);
+            Route::delete('/{id}/delete_ajax', [BorrowingController::class, 'delete_ajax']);
+            Route::delete('/{id}', [BorrowingController::class, 'destroy']);
         });
     });
 
-    /**
-     * ===============================
-     * ========== MAHASISWA ==========
-     * ===============================
-     */
+    // Route untuk role mahasiswa
     Route::middleware('role:mahasiswa')->group(function () {
         Route::prefix('booking')->group(function () {
             Route::get('/', [BookingController::class, 'index']);
