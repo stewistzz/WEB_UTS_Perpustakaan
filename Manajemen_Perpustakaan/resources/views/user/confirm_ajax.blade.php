@@ -1,5 +1,5 @@
 @empty($user)
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+    <div id="myModal" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Kesalahan</h5>
@@ -20,7 +20,7 @@
     <form action="{{ url('/user/' . $user->id . '/delete_ajax') }}" method="POST" id="form-delete">
         @csrf
         @method('DELETE')
-        <div id="modal-master" class="modal-dialog modal-lg" role="document">
+        <div id="myModal" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Hapus Data User</h5>

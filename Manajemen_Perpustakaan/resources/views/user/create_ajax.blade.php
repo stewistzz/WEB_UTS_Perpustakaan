@@ -1,6 +1,6 @@
 <form action="{{ url('/user/ajax') }}" method="POST" id="form-tambah">
     @csrf
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+    <div id="myModal" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Data Pengguna</h5>
@@ -33,7 +33,7 @@
                     <select name="role" id="role" class="form-control" required>
                         <option value="">-- Pilih Role --</option>
                         <option value="admin">Admin</option>
-                        <option value="user">Mahasiswa</option>
+                        <option value="mahasiswa">Mahasiswa</option>
                     </select>
                     <small id="error-role" class="error-text form-text text-danger"></small>
                 </div>

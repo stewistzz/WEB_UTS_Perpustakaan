@@ -1,5 +1,5 @@
 @empty($user)
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+    <div id="myModal" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
@@ -17,7 +17,7 @@
 @else
     <form action="{{ url('/user/' . $user->id . '/update_ajax') }}" method="POST" id="form-edit">
         @csrf @method('PUT')
-        <div id="modal-master" class="modal-dialog modal-lg" role="document">
+        <div id="myModal" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Edit Data Pengguna</h5>

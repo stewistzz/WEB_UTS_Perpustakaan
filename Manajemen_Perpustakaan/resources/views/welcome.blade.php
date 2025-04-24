@@ -7,7 +7,7 @@
                 @if (Auth::user() && Auth::user()->role === 'admin')
                     Selamat datang, Admin.
                 @else
-                    Selamat datang, User.
+                    Selamat datang, Mahasiswa.
                 @endif
             </h3>
         </div>
